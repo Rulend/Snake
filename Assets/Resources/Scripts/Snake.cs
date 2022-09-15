@@ -52,14 +52,14 @@ public class Snake : MonoBehaviour
 		m_CurrentDirection	= Vector2.up;						// Set default direction to start moving to up
 		m_MoveDirection		= MoveDirection.MOVEDIR_UP;         // Used to rotate the head sprite
 		m_CurrentScore		= 0;
-		m_MaxPossibleScore	= GridManager.Instance.GetMaxNumScore();
+		m_MaxPossibleScore	= GridManager.Instance.GetMaxNumScore() - m_NumStartSegments;
 
 		// Set the sprites
 		GetComponent<SpriteRenderer>().sprite = _HeadSprite; // This script is on the head 
 		m_BodySprite = _BodySprite;
 		m_TailSprite = _TailSprite;
 
-		transform.position		= new Vector3( Random.Range( GridManager.Instance.GridMinX, GridManager.Instance.GridMaxX ), 0.0f, 0.0f ); // TODO:: Fix this
+		transform.position		= new Vector3( Random.Range( GridManager.Instance.GridMinX, GridManager.Instance.GridMaxX ), 0.0f, 0.0f ); // Randomize x position
 		transform.eulerAngles	= Vector3.zero; // Reset rotation
 
 
@@ -277,8 +277,9 @@ public class Snake : MonoBehaviour
 			UIManager.Instance.UpdateHighScore( DisplayedScore );
 		}
 
-		if ( m_CurrentScore + 1 >= m_MaxPossibleScore ) // TODO:: switch this out for the actual amount you need to win
+		if ( m_CurrentScore >= m_MaxPossibleScore ) 
 		{
+			enabled = false;
 			UIManager.Instance.ShowVictory();
 			return;
 		}
