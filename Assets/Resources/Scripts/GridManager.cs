@@ -6,7 +6,7 @@ public class GridManager : MonoBehaviour
 {
 	private static GridManager m_Instance;
 
-	public static GridManager Instance => m_Instance;	// TODO:: Remove this in favour of an event system or just give a reference to the snake.
+	public static GridManager Instance => m_Instance;
 
 	// Usually I would just specify a size here, but because of the offset needed because of the white panel on the right, and some other strange things regarding the scale of the snake needing the walls to be at exact intervals, I decided not to. 
 	[SerializeField] private int	m_GridMinX;
