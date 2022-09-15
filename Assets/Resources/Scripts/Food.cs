@@ -14,24 +14,40 @@ public class Food : MonoBehaviour
 	// Because the food has the Food-layer, it will only interact with the Snake-layer.
 	private void OnTriggerEnter2D( Collider2D collision )
 	{
-		Snake		rSnake		= collision.GetComponent<Snake>();  // This is ok since only the snake can collide with this
-		GridManager	rGridSystem = GridManager.Instance; // Save down the reference so we don't have to do GridSystem.Instance for all the ones below
+		Snake		rSnake			= collision.GetComponent<Snake>();  // This is ok since only the snake can collide with this
 
 		// Return true if it wins, that way we can return from this function and not be stuck in a while loop
 		rSnake.EatFood(); // Eat the food
 
+		RandomizePosition( rSnake );
+	}
 
-		Vector3 RandomPos	= Vector3.zero;
-		RandomPos.x			= Random.Range( rGridSystem.GridMinX, rGridSystem.GridMaxX );
-		RandomPos.y			= Random.Range( rGridSystem.GridMinY, rGridSystem.GridMaxY );
 
-		while ( rSnake.IsSegmentInPosition( RandomPos ) ) // Randomize position until we get one where there isn't a segment in.
+	// Send in the snake as a reference in order to check if the randomized position has a snake segment on it
+	private void RandomizePosition( Snake _Snake )
+	{
+		// Create a list of all the positions where there isn't a snake segment. 
+		//It's better to randomize the position in only the available spots, rather than randomizing a position in a while loop and then checking if the position is available.
+		// The reason for that is because as the snake grows bigger, it will take longer to find a free position if it is entirely randomized, as it could generate the same position more than once.
+
+		GridManager rGridSManager = GridManager.Instance;
+
+		List<Vector2> AvailablePositions = new List<Vector2>();
+
+		for ( int PosY = rGridSManager.GridMaxY; PosY > rGridSManager.GridMinY; --PosY ) // Start from the top
 		{
-			RandomPos.x = Random.Range( rGridSystem.GridMinX, rGridSystem.GridMaxX );
-			RandomPos.y = Random.Range( rGridSystem.GridMinY, rGridSystem.GridMaxY );
+			for ( int PosX = rGridSManager.GridMinX; PosX < rGridSManager.GridMaxX; ++PosX ) // Start from the left
+			{
+				Vector3 PotentialPos = new Vector3( PosX, PosY, 0.0f );
+
+				if ( !_Snake.IsSegmentInPosition( PotentialPos ) )
+					AvailablePositions.Add( PotentialPos );
+			}
 		}
 
-		transform.position = RandomPos;
+		Vector3 NewPos = AvailablePositions[ Random.Range( 0, AvailablePositions.Count ) ]; // Max is exclusive in .Range, so no need to do -1
+
+		transform.position = NewPos;
 	}
 }
 
